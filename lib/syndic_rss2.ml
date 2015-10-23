@@ -1,3 +1,6 @@
+module Make (R : sig val relax : bool end) = struct
+include R
+
 open Syndic_common.XML
 open Syndic_common.Util
 module XML = Syndic_xml
@@ -333,10 +336,11 @@ type enclosure' = [
   | `Mime of string
 ]
 
-let make_enclosure ~pos (l : [< enclosure' ] list) =
+let make_enclosure  ~pos (l : [< enclosure' ] list) =
   let url = match find (function `URL _ -> true | _ -> false) l with
     | Some (`URL u) -> u
     | _ ->
+      if relax then Uri.of_string "" else
       raise (Error.Error (pos,
                             "Enclosure elements MUST have a 'url' \
                              attribute"))
@@ -344,6 +348,7 @@ let make_enclosure ~pos (l : [< enclosure' ] list) =
   let length = match find (function `Length _ -> true | _ -> false) l with
     | Some (`Length l) -> int_of_string l
     | _ ->
+      if relax then 0 else
       raise (Error.Error (pos,
                             "Enclosure elements MUST have a 'length' \
                              attribute"))
@@ -351,6 +356,7 @@ let make_enclosure ~pos (l : [< enclosure' ] list) =
   let mime = match find (function `Mime _ -> true | _ -> false) l with
     | Some (`Mime m) -> m
     | _ ->
+      if relax then "application/octet-stream" else
       raise (Error.Error (pos,
                             "Enclosure elements MUST have a 'type' \
                              attribute"))
@@ -1181,3 +1187,5 @@ let to_atom ?self (ch: channel) : Atom.feed =
     updated;
     entries = List.map (entry_of_item ch.link updated) ch.items;
   }
+
+end

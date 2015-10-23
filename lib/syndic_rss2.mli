@@ -1,3 +1,5 @@
+module Make(R : sig val relax : bool end) : sig
+
 (** [Syndic.Rss2]: compliant with
     {{: http://www.rssboard.org/rss-specification} RSS 2.0}. *)
 
@@ -392,3 +394,5 @@ val unsafe : ?xmlbase: Uri.t -> Xmlm.input ->
        | `Title of string
        | `WebMaster of string ]
          list ]
+
+end
