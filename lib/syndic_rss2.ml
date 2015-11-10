@@ -9,6 +9,16 @@ module Atom = Syndic_atom
 module Date = Syndic_date
 module Error = Syndic_error
 
+let _fb ~fallback f x =
+  if not relax then
+    f x
+  else
+    try f x
+    with e ->
+      Printf.eprintf "Syndic.Rss: Warning: exception raise: %s\n%!"
+        (Error.to_string e);
+      fallback
+
 type image =
   {
     url: Uri.t;
@@ -32,6 +42,7 @@ let make_image ~pos (l : [< image' ] list) =
   let url = match find (function `URL _ -> true | _ -> false) l with
     | Some (`URL u) -> u
     | _ ->
+      _fb ~fallback:(Uri.of_string "")
       raise (Error.Error (pos,
                             "<image> elements MUST contains exactly one \
                              <url> element"))
@@ -39,6 +50,7 @@ let make_image ~pos (l : [< image' ] list) =
   let title = match find (function `Title _ -> true | _ -> false) l with
     | Some (`Title t) -> t
     | _ ->
+      _fb ~fallback:""
       raise (Error.Error (pos,
                             "<image> elements MUST contains exactly one \
                              <title> element"))
@@ -46,6 +58,7 @@ let make_image ~pos (l : [< image' ] list) =
   let link = match find (function `Link _ -> true | _ -> false) l with
     | Some (`Link l) -> l
     | _ ->
+      _fb ~fallback:(Uri.of_string "")
       raise (Error.Error (pos,
                             "<image> elements MUST contains exactly one \
                              <link> element"))
@@ -560,7 +573,9 @@ let item_link_of_xml ~xmlbase (pos, tag, datas) =
 
 let item_author_of_xml ~xmlbase (pos, tag, datas) =
   try `Author(get_leaf datas)
-  with Not_found -> raise (Error.Error (pos,
+  with Not_found ->
+    _fb ~fallback:(`Author(""))
+    raise (Error.Error (pos,
                             "The content of <author> MUST be \
                              a non-empty string"))
 
