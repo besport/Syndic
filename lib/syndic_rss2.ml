@@ -693,10 +693,10 @@ let make_channel ~pos (l : [< channel' ] list) =
   let description =
     match find (function `Description _ -> true | _ -> false) l with
     | Some (`Description l) -> l
-    | _ ->
-      raise (Error.Error (pos,
-                            "<channel> elements MUST contains exactly one \
-                             <description> element"))
+    | _ -> ""
+      (* raise (Error.Error (pos, *)
+      (*                       "<channel> elements MUST contains exactly one \ *)
+      (*                        <description> element")) *)
   in
   let language = match find (function `Language _ -> true | _ -> false) l with
     | Some (`Language a) -> Some a

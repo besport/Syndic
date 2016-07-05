@@ -243,9 +243,10 @@ let make_channel ~pos (l : [< channel' ] list) =
   in let description =
     match find (function `Description _ -> true | _ -> false) l with
     | Some (`Description s) -> s
-    | _ -> raise (Error.Error (pos,
-                            "<channel> elements MUST contains exactly one \
-                             <description> element"))
+    | _ -> ""
+      (* raise (Error.Error (pos, *)
+           (*                  "<channel> elements MUST contains exactly one \ *)
+           (*                   <description> element")) *)
   in let image = match find (function `Image _ -> true | _ -> false) l with
     | Some (`Image i) -> Some i
     | _ -> None
