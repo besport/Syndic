@@ -982,9 +982,11 @@ let make_entry ~pos l =
   (* atomUpdated *)
   let updated = match find (function `Updated _ -> true | _ -> false) l with
     | Some (`Updated u) -> u
-    | _ -> raise (Error.Error (pos,
-                            "<entry> elements MUST contains exactly one \
-                             <updated> elements"))
+    | _ ->
+      CalendarLib.Calendar.now()
+      (* raise (Error.Error (pos, *)
+      (*                     "<entry> elements MUST contains exactly one \ *)
+      (*                      <updated> elements")) *)
   in
   `Entry (pos, ({ authors;
                   categories;
