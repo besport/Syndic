@@ -1137,9 +1137,11 @@ let make_feed ~pos (l : _ list) =
   (* atomUpdated *)
   let updated = match find (function `Updated _ -> true | _ -> false) l with
     | Some (`Updated u) -> u
-    | _ -> raise (Error.Error (pos,
-                            "<feed> elements MUST contains exactly one \
-                             <updated> elements"))
+    | _ ->
+      (* raise (Error.Error (pos, *)
+      (*                  "<feed> elements MUST contains exactly one \ *)
+      (*                   <updated> elements")) *)
+      CalendarLib.Calendar.now()
   in
   (* atomEntry* *)
   let fix_author pos (e: entry) =
