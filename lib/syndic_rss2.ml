@@ -101,11 +101,14 @@ let image_link_of_xml ~xmlbase (pos, tag, datas) =
 
 let image_size_of_xml ~max ~xmlbase (pos, tag, datas) =
   try let size = int_of_string (get_leaf datas) in
+(*
     if size > max
     then raise (Error.Error
                   (pos, ("size of "  ^ (get_tag_name tag)
                          ^ " exceeded (max is " ^ (string_of_int max) ^ ")")))
-    else size
+    else
+*)
+    size
   with Not_found -> raise (Error.Error (pos,
                             ("The content of <"^(get_tag_name tag)^"> MUST be \
                               a non-empty string")))
