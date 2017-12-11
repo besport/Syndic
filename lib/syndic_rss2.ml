@@ -812,7 +812,9 @@ let channel_description_of_xml ~xmlbase (pos, tag, datas) =
 
 let channel_link_of_xml ~xmlbase (pos, tag, datas) =
   try `Link(XML.resolve ~xmlbase (Uri.of_string (get_leaf datas)))
-  with Not_found -> raise (Error.Error (pos,
+  with Not_found -> if relax then
+                      `Link (XML.resolve ~xmlbase (Uri.of_string "")) else
+                    raise (Error.Error (pos,
                             "The content of <link> MUST be \
                              a non-empty string"))
 
