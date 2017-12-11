@@ -801,7 +801,8 @@ let make_channel ~pos (l : [< channel' ] list) =
 
 let channel_title_of_xml ~xmlbase (pos, tag, datas) =
   try `Title(get_leaf datas)
-  with Not_found -> raise (Error.Error (pos,
+  with Not_found -> if relax then `Title "" else
+                    raise (Error.Error (pos,
                             "The content of <title> MUST be \
                              a non-empty string"))
 
