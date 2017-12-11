@@ -675,7 +675,7 @@ type channel' = [
   | `PubDate of Date.t option
   | `LastBuildDate of Date.t
   | `Category of string
-  | `Generator of string
+  | `Generator of string option
   | `Docs of Uri.t
   | `Cloud of cloud
   | `TTL of int
@@ -741,7 +741,7 @@ let make_channel ~pos (l : [< channel' ] list) =
     | _ -> None
   in
   let generator = match find (function `Generator _ -> true | _ -> false) l with
-    | Some (`Generator a) -> Some a
+    | Some (`Generator a) -> a
     | _ -> None
   in
   let docs = match find (function `Docs _ -> true | _ -> false) l with
@@ -859,8 +859,9 @@ let channel_category_of_xml ~xmlbase (pos, tag, datas) =
                              a non-empty string"))
 
 let channel_generator_of_xml ~xmlbase (pos, tag, datas) =
-  try `Generator(get_leaf datas)
-  with Not_found -> raise (Error.Error (pos,
+  try `Generator(Some (get_leaf datas))
+  with Not_found -> if relax then `Generator None else
+                    raise (Error.Error (pos,
                             "The content of <generator> MUST be \
                              a non-empty string"))
 
