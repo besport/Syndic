@@ -362,7 +362,15 @@ let make_enclosure  ~pos (l : [< enclosure' ] list) =
                              attribute"))
   in
   let length = match find (function `Length _ -> true | _ -> false) l with
-    | Some (`Length l) -> int_of_string l
+    | Some (`Length l) ->
+        begin try int_of_string l
+          with
+          | Failure _ when relax -> 0
+          | _ -> raise (Error.Error (pos,
+                            "The <length> attribute of an <enclosure> MUST be \
+                             a non-empty string representing an integer"))
+
+        end
     | _ ->
       if relax then 0 else
       raise (Error.Error (pos,
