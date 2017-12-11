@@ -496,7 +496,7 @@ type item' = [
   | `Comments of Uri.t
   | `Enclosure of enclosure
   | `Guid of guid
-  | `PubDate of Date.t
+  | `PubDate of Date.t option
   | `Source of source
 ]
 
@@ -539,7 +539,7 @@ let make_item ~pos (l : _ list) =
     | _ -> None
   in
   let pubDate = match find (function `PubDate _ -> true | _ -> false) l with
-    | Some (`PubDate p) -> Some p
+    | Some (`PubDate p) -> p
     | _ -> None
   in
   let source = match find (function `Source _ -> true | _ -> false) l with
@@ -589,10 +589,11 @@ let item_comments_of_xml ~xmlbase (pos, tag, datas) =
                              a non-empty string"))
 
 let item_pubdate_of_xml ~xmlbase (pos, tag, datas) =
-  try `PubDate(Date.of_rfc822 (get_leaf datas))
+  try `PubDate(Some (Date.of_rfc822 (get_leaf datas)))
   with Not_found -> raise (Error.Error (pos,
                             "The content of <pubDate> MUST be \
                              a non-empty string"))
+     | Invalid_argument _ when relax -> `PubDate None
 
 let item_namespaces = [""; "http://purl.org/rss/1.0/modules/content/"]
 
@@ -663,7 +664,7 @@ type channel' = [
   | `Copyright of string
   | `ManagingEditor of string
   | `WebMaster of string
-  | `PubDate of Date.t
+  | `PubDate of Date.t option
   | `LastBuildDate of Date.t
   | `Category of string
   | `Generator of string
@@ -719,7 +720,7 @@ let make_channel ~pos (l : [< channel' ] list) =
     | _ -> None
   in
   let pubDate = match find (function `PubDate _ -> true | _ -> false) l with
-    | Some (`PubDate a) -> Some a
+    | Some (`PubDate a) -> a
     | _ -> None
   in
   let lastBuildDate =
@@ -831,7 +832,7 @@ let channel_webmaster_of_xml ~xmlbase (pos, tag, datas) =
                              a non-empty string"))
 
 let channel_pubdate_of_xml ~xmlbase (pos, tag, datas) =
-  try `PubDate(Date.of_rfc822 (get_leaf datas))
+  try `PubDate(Some (Date.of_rfc822 (get_leaf datas)))
   with Not_found -> raise (Error.Error (pos,
                             "The content of <pubDate> MUST be \
                              a non-empty string"))
