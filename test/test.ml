@@ -1,7 +1,7 @@
 open Lwt
 
 module CLU = Cohttp_lwt_unix
-module CLB = Cohttp_lwt_body
+module CLB = Cohttp_lwt.Body
 
 type result =
   | Ok
@@ -121,5 +121,5 @@ let make_test (src, fmt, result) =
                Lwt.return ()
 
 let () =
-  Lwt_unix.run (Lwt_list.map_s make_test tests >>= fun _ -> Lwt.return ());
+  Lwt_main.run (Lwt_list.map_s make_test tests >>= fun _ -> Lwt.return ());
   if state () then exit 1 else exit 0
