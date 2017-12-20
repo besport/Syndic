@@ -567,7 +567,8 @@ let make_item ~pos (l : _ list) =
 
 let item_title_of_xml ~xmlbase (pos, tag, datas) =
   try `Title(get_leaf datas)
-  with Not_found -> raise (Error.Error (pos,
+  with Not_found -> _fb ~fallback:(`Title "")
+                    raise (Error.Error (pos,
                             "The content of <title> MUST be \
                              a non-empty string"))
 
