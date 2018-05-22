@@ -580,7 +580,7 @@ let item_content_of_xml ~xmlbase (pos, tag, datas) =
   `Content(xmlbase, try get_leaf datas with Not_found -> "")
 
 let item_link_of_xml ~xmlbase (pos, tag, datas) =
-  `Link(try Some(XML.resolve ~xmlbase (Uri.of_string (get_leaf datas)))
+  `Link(try Some(XML.resolve ~xmlbase (Uri.of_string (String.trim @@ get_leaf datas)))
         with Not_found -> None)
 
 let item_author_of_xml ~xmlbase (pos, tag, datas) =
